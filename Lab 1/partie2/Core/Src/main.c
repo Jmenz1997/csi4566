@@ -302,6 +302,7 @@ static void MX_GPIO_Init(void)
 /* USER CODE END MX_GPIO_Init_1 */
 
   /* GPIO Ports Clock Enable */
+  __HAL_RCC_GPIOC_CLK_ENABLE();
   __HAL_RCC_GPIOH_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
@@ -310,11 +311,11 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(GPIOB, GPIO_PIN_3|GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_6
                           |GPIO_PIN_7, GPIO_PIN_RESET);
 
-  // pin 7 = red walk
-  // pin 6 = green walk
-  // pin 5 = red car
-  // pin 4 = yellow car
-  // pin 3 = green car
+  /*Configure GPIO pin : PC13 */
+  GPIO_InitStruct.Pin = GPIO_PIN_13;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
   /*Configure GPIO pins : PB3 PB4 PB5 PB6
                            PB7 */
@@ -340,15 +341,19 @@ static void MX_GPIO_Init(void)
   * @retval None
   */
 /* USER CODE END Header_StartTask1 */
-void StartTask1(void *argument) // green car light and red walk light, wait for button press
+void StartTask1(void *argument)
 {
   /* USER CODE BEGIN 5 */
   /* Infinite loop */
   for(;;)
   {
-	  HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_3);
-	  HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_7);
-	  // add button press condition
+	  // for btn press HAL_GPIO_ReadPin(GPIOC_ GPIO_PIN_13)
+
+	  while(HAL_GPIO_ReadPin(GPIOC_ GPIO_PIN_13) == 0){
+		  HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_3);
+		  HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_7);
+		  // add button press condition
+	  }
   }
   /* USER CODE END 5 */
 }
@@ -360,7 +365,7 @@ void StartTask1(void *argument) // green car light and red walk light, wait for 
 * @retval None
 */
 /* USER CODE END Header_StartTask2 */
-void StartTask2(void *argument) // yellow light and red walk, 3 sec
+void StartTask2(void *argument)
 {
   /* USER CODE BEGIN StartTask2 */
   /* Infinite loop */
@@ -380,7 +385,7 @@ void StartTask2(void *argument) // yellow light and red walk, 3 sec
 * @retval None
 */
 /* USER CODE END Header_StartTask3 */
-void StartTask3(void *argument) // red light and red walk, 1 sec
+void StartTask3(void *argument)
 {
   /* USER CODE BEGIN StartTask3 */
   /* Infinite loop */
@@ -400,7 +405,7 @@ void StartTask3(void *argument) // red light and red walk, 1 sec
 * @retval None
 */
 /* USER CODE END Header_StartTask4 */
-void StartTask4(void *argument) // red light and green walk, 10 sec
+void StartTask4(void *argument)
 {
   /* USER CODE BEGIN StartTask4 */
   /* Infinite loop */
@@ -420,7 +425,7 @@ void StartTask4(void *argument) // red light and green walk, 10 sec
 * @retval None
 */
 /* USER CODE END Header_StartTask5 */
-void StartTask5(void *argument) // red light and red walk, 1 sec
+void StartTask5(void *argument)
 {
   /* USER CODE BEGIN StartTask5 */
   /* Infinite loop */
@@ -440,7 +445,7 @@ void StartTask5(void *argument) // red light and red walk, 1 sec
 * @retval None
 */
 /* USER CODE END Header_StartTask6 */
-void StartTask6(void *argument) // red light, yellow light and red walk, 2 sec
+void StartTask6(void *argument)
 {
   /* USER CODE BEGIN StartTask6 */
   /* Infinite loop */
