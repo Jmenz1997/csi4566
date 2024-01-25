@@ -118,6 +118,7 @@ int main(void)
   MX_GPIO_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
+
   /* USER CODE END 2 */
 
   /* Init scheduler */
@@ -149,15 +150,6 @@ int main(void)
   /* creation of Task3 */
   Task3Handle = osThreadNew(StartTask3, NULL, &Task3_attributes);
 
-  /* creation of Task4 */
-  Task4Handle = osThreadNew(StartTask4, NULL, &Task4_attributes);
-
-  /* creation of Task5 */
-  Task5Handle = osThreadNew(StartTask5, NULL, &Task5_attributes);
-
-  /* creation of Task6 */
-  Task6Handle = osThreadNew(StartTask6, NULL, &Task6_attributes);
-
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
   /* USER CODE END RTOS_THREADS */
@@ -179,6 +171,7 @@ int main(void)
     /* USER CODE BEGIN 3 */
 	  //HAL_UART_Transmit(&huart2, dataTask1, 7, 1000);
 	  //HAL_Delay(1000);
+
 
   }
   /* USER CODE END 3 */
@@ -297,12 +290,6 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
-  /*Configure GPIO pin: B1_button_Pin*/
-  GPIO_InitStruct.Pin = B1_button_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(B1_button_GPIO_Port, &GPIO_InitStruct);
-
 /* USER CODE BEGIN MX_GPIO_Init_2 */
 /* USER CODE END MX_GPIO_Init_2 */
 }
@@ -324,17 +311,10 @@ void StartTask1(void *argument)
   /* Infinite loop */
   for(;;)
   {
-	  bool btnPressed = false;
-
-	  while(btnPressed == false){
-		  HAL_UART_Transmit(&huart2, dataTask1, sizeof(dataTask1));
-		 // HAL_GPIO_WritePin(GPIOB, GPIO_PIN_3|GPIO_PIN_4|GPIO_PIN_5, GPIO_PIN_RESET);
-		  HAL_GPIO_TogglePin(GPIOB /*, vertV, rougeP*/);
-		  // verifie si le bouton a ete pesser et change la valeur de btnPressed pour sortire du loop
-		  if(HAL_GPIO_ReadPin(GPIO_TypeDef* GPIOx, unit16t GPIO_Pin) == 0){
-			  btnPressed = true;
-		  }
-	  }
+	  HAL_UART_Transmit(&huart2, dataTask1, sizeof(dataTask1), 1000);
+	 // HAL_GPIO_WritePin(GPIOB, GPIO_PIN_3|GPIO_PIN_4|GPIO_PIN_5, GPIO_PIN_RESET);
+	  HAL_GPIO_TogglePin(GPIOB,GPIO_PIN_5);
+      osDelay(1000);
 
   }
   /* USER CODE END 5 */
@@ -353,9 +333,9 @@ void StartTask2(void *argument)
   /* Infinite loop */
   for(;;)
   {
-	  HAL_UART_Transmit(&huart2, dataTask2, sizeof(dataTask2), 3000);
-	  HAL_GPIO_TogglePin(GPIOB /*JauneV, RougeP*/);
-	  osDelay(3000);
+	  HAL_UART_Transmit(&huart2, dataTask2, sizeof(dataTask2), 1000);
+	  HAL_GPIO_TogglePin(GPIOB,GPIO_PIN_4);
+	  osDelay(1000);
   }
   /* USER CODE END StartTask2 */
 }
@@ -374,70 +354,10 @@ void StartTask3(void *argument)
   for(;;)
   {
 	  HAL_UART_Transmit(&huart2, dataTask3, sizeof(dataTask3), 1000);
-	  HAL_GPIO_TogglePin(GPIOB /*RougeV, RougeP*/);
+	  HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_3);
 	  osDelay(1000);
   }
   /* USER CODE END StartTask3 */
-}
-
-/* USER CODE BEGIN Header_StartTask4 */
-/**
-* @brief Function implementing the Task4 thread.
-* @param argument: Not used
-* @retval None
-*/
-/* USER CODE END Header_StartTask4 */
-void StartTask4(void *argument)
-{
-  /* USER CODE BEGIN StartTask4 */
-  /* Infinite loop */
-  for(;;)
-  {
-	  HAL_UART_Transmit(&huart2, dataTask4, sizeof(dataTask4), 10000);
-	  HAL_GPIO_TogglePin(GPIOB /*RougeV, VertP*/);
-	  osDelay(10000);
-  }
-  /* USER CODE END StartTask4 */
-}
-
-/* USER CODE BEGIN Header_StartTask5 */
-/**
-* @brief Function implementing the Task5 thread.
-* @param argument: Not used
-* @retval None
-*/
-/* USER CODE END Header_StartTask5 */
-void StartTask5(void *argument)
-{
-  /* USER CODE BEGIN StartTask5 */
-  /* Infinite loop */
-  for(;;)
-  {
-	  HAL_UART_Transmit(&huart2, dataTask5, sizeof(dataTask5), 1000);
-	  HAL_GPIO_TogglePin(GPIOB /*RougeV, RougeP*/);
-	  osDelay(1000);
-  }
-  /* USER CODE END StartTask5 */
-}
-
-/* USER CODE BEGIN Header_StartTask6 */
-/**
-* @brief Function implementing the Task6 thread.
-* @param argument: Not used
-* @retval None
-*/
-/* USER CODE END Header_StartTask6 */
-void StartTask6(void *argument)
-{
-  /* USER CODE BEGIN StartTask6 */
-  /* Infinite loop */
-  for(;;)
-  {
-	  HAL_UART_Transmit(&huart2, dataTask6, sizeof(dataTask6), 2000);
-	  HAL_GPIO_TogglePin(GPIOB /*RougeV, JauneV, RougeP*/);
-	  osDelay(2000);
-  }
-  /* USER CODE END StartTask6 */
 }
 
 /**

@@ -64,8 +64,8 @@ all: main-build
 main-build: Partie1.elf secondary-outputs
 
 # Tool invocations
-Partie1.elf Partie1.map: $(OBJS) $(USER_OBJS) /Users/noahthompson/Documents/GitHub/csi4566/Lab\ 1/Lab1/STM32F446RETX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "Partie1.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"/Users/noahthompson/Documents/GitHub/csi4566/Lab 1/Lab1/STM32F446RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Partie1.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Partie1.elf Partie1.map: $(OBJS) $(USER_OBJS) /Users/noahthompson/Documents/GitHub/csi4566/Lab\ 1/partie1/Lab1/STM32F446RETX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "Partie1.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"/Users/noahthompson/Documents/GitHub/csi4566/Lab 1/partie1/Lab1/STM32F446RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Partie1.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 

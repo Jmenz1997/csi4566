@@ -150,9 +150,6 @@ int main(void)
   /* creation of Task3 */
   Task3Handle = osThreadNew(StartTask3, NULL, &Task3_attributes);
 
-  /* creation of Task4 */
-  Task4Handle = osThreadNew(StartTask4, NULL, &Task4_attributes);
-
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
   /* USER CODE END RTOS_THREADS */
@@ -314,10 +311,10 @@ void StartTask1(void *argument)
   /* Infinite loop */
   for(;;)
   {
-	  HAL_UART_Transmit(&huart2, dataTask1, sizeof(dataTask1), 10000);
+	  HAL_UART_Transmit(&huart2, dataTask1, sizeof(dataTask1), 1000);
 	 // HAL_GPIO_WritePin(GPIOB, GPIO_PIN_3|GPIO_PIN_4|GPIO_PIN_5, GPIO_PIN_RESET);
 	  HAL_GPIO_TogglePin(GPIOB,GPIO_PIN_5);
-      osDelay(10000);
+      osDelay(1000);
 
   }
   /* USER CODE END 5 */
@@ -336,9 +333,9 @@ void StartTask2(void *argument)
   /* Infinite loop */
   for(;;)
   {
-	  HAL_UART_Transmit(&huart2, dataTask2, sizeof(dataTask2), 2000);
-	  HAL_GPIO_TogglePin(GPIOB,GPIO_PIN_5,GPIO_PIN_4);
-	  osDelay(2000);
+	  HAL_UART_Transmit(&huart2, dataTask2, sizeof(dataTask2), 1000);
+	  HAL_GPIO_TogglePin(GPIOB,GPIO_PIN_4);
+	  osDelay(1000);
   }
   /* USER CODE END StartTask2 */
 }
@@ -356,31 +353,11 @@ void StartTask3(void *argument)
   /* Infinite loop */
   for(;;)
   {
-	  HAL_UART_Transmit(&huart2, dataTask3, sizeof(dataTask3), 10000);
+	  HAL_UART_Transmit(&huart2, dataTask3, sizeof(dataTask3), 1000);
 	  HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_3);
-	  osDelay(10000);
+	  osDelay(1000);
   }
   /* USER CODE END StartTask3 */
-}
-
-/* USER CODE BEGIN Header_StartTask4 */
-/**
-* @brief Function implementing the Task4 thread.
-* @param argument: Not used
-* @retval None
-*/
-/* USER CODE END Header_StartTask4 */
-void StartTask4(void *argument)
-{
-  /* USER CODE BEGIN StartTask3 */
-  /* Infinite loop */
-  for(;;)
-  {
-	  HAL_UART_Transmit(&huart2, dataTask4, sizeof(dataTask4), 3000);
-	  HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_4);
-	  osDelay(3000);
-  }
-  /* USER CODE END StartTask4 */
 }
 
 /**
