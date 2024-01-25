@@ -64,6 +64,13 @@ const osThreadAttr_t Task3_attributes = {
   .stack_size = 128 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
+/* Definitions for Task4 */
+osThreadId_t Task4Handle;
+const osThreadAttr_t Task4_attributes = {
+  .name = "Task4",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityNormal,
+};
 /* USER CODE BEGIN PV */
 
 /* USER CODE END PV */
@@ -75,6 +82,7 @@ static void MX_USART2_UART_Init(void);
 void StartTask1(void *argument);
 void StartTask2(void *argument);
 void StartTask3(void *argument);
+void StartTask4(void *argument);
 
 /* USER CODE BEGIN PFP */
 
@@ -82,9 +90,6 @@ void StartTask3(void *argument);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-uint8_t dataTask1[] = "Hi, Task1\r\n";
-uint8_t dataTask2[] = "Hello, Task2\r\n";
-uint8_t dataTask3[] = "Great, Task3\r\n";
 
 /* USER CODE END 0 */
 
@@ -118,6 +123,7 @@ int main(void)
   MX_GPIO_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
+
   /* USER CODE END 2 */
 
   /* Init scheduler */
@@ -152,12 +158,6 @@ int main(void)
   /* creation of Task4 */
   Task4Handle = osThreadNew(StartTask4, NULL, &Task4_attributes);
 
-  /* creation of Task5 */
-  Task5Handle = osThreadNew(StartTask5, NULL, &Task5_attributes);
-
-  /* creation of Task6 */
-  Task6Handle = osThreadNew(StartTask6, NULL, &Task6_attributes);
-
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
   /* USER CODE END RTOS_THREADS */
@@ -177,9 +177,6 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	  //HAL_UART_Transmit(&huart2, dataTask1, 7, 1000);
-	  //HAL_Delay(1000);
-
   }
   /* USER CODE END 3 */
 }
@@ -297,12 +294,6 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
-  /*Configure GPIO pin: B1_button_Pin*/
-  GPIO_InitStruct.Pin = B1_button_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(B1_button_GPIO_Port, &GPIO_InitStruct);
-
 /* USER CODE BEGIN MX_GPIO_Init_2 */
 /* USER CODE END MX_GPIO_Init_2 */
 }
@@ -324,18 +315,9 @@ void StartTask1(void *argument)
   /* Infinite loop */
   for(;;)
   {
-	  bool btnPressed = false;
-
-	  while(btnPressed == false){
-		  HAL_UART_Transmit(&huart2, dataTask1, sizeof(dataTask1));
-		 // HAL_GPIO_WritePin(GPIOB, GPIO_PIN_3|GPIO_PIN_4|GPIO_PIN_5, GPIO_PIN_RESET);
-		  HAL_GPIO_TogglePin(GPIOB /*, vertV, rougeP*/);
-		  // verifie si le bouton a ete pesser et change la valeur de btnPressed pour sortire du loop
-		  if(HAL_GPIO_ReadPin(GPIO_TypeDef* GPIOx, unit16t GPIO_Pin) == 0){
-			  btnPressed = true;
-		  }
-	  }
-
+	  //HAL_UART_Transmit(&huart2, dataTask1, 7, 10000);
+	  HAL_GPIO_TogglePin(GPIOB,GPIO_PIN_5);
+	  osDelay(10000);
   }
   /* USER CODE END 5 */
 }
@@ -353,9 +335,10 @@ void StartTask2(void *argument)
   /* Infinite loop */
   for(;;)
   {
-	  HAL_UART_Transmit(&huart2, dataTask2, sizeof(dataTask2), 3000);
-	  HAL_GPIO_TogglePin(GPIOB /*JauneV, RougeP*/);
-	  osDelay(3000);
+	 // HAL_UART_Transmit(&huart2, dataTask1, 7, 3000);
+	  HAL_GPIO_TogglePin(GPIOB,GPIO_PIN_5);
+	  HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_4);
+	  osDelay(2000);
   }
   /* USER CODE END StartTask2 */
 }
@@ -373,9 +356,9 @@ void StartTask3(void *argument)
   /* Infinite loop */
   for(;;)
   {
-	  HAL_UART_Transmit(&huart2, dataTask3, sizeof(dataTask3), 1000);
-	  HAL_GPIO_TogglePin(GPIOB /*RougeV, RougeP*/);
-	  osDelay(1000);
+	  //HAL_UART_Transmit(&huart2, dataTask1, 7, 10000);
+	  HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_3);
+	  osDelay(10000);
   }
   /* USER CODE END StartTask3 */
 }
@@ -393,72 +376,11 @@ void StartTask4(void *argument)
   /* Infinite loop */
   for(;;)
   {
-	  HAL_UART_Transmit(&huart2, dataTask4, sizeof(dataTask4), 10000);
-	  HAL_GPIO_TogglePin(GPIOB /*RougeV, VertP*/);
-	  osDelay(10000);
+	  //HAL_UART_Transmit(&huart2, 7, 3000);
+	  HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_4);
+	  osDelay(3000);
   }
   /* USER CODE END StartTask4 */
-}
-
-/* USER CODE BEGIN Header_StartTask5 */
-/**
-* @brief Function implementing the Task5 thread.
-* @param argument: Not used
-* @retval None
-*/
-/* USER CODE END Header_StartTask5 */
-void StartTask5(void *argument)
-{
-  /* USER CODE BEGIN StartTask5 */
-  /* Infinite loop */
-  for(;;)
-  {
-	  HAL_UART_Transmit(&huart2, dataTask5, sizeof(dataTask5), 1000);
-	  HAL_GPIO_TogglePin(GPIOB /*RougeV, RougeP*/);
-	  osDelay(1000);
-  }
-  /* USER CODE END StartTask5 */
-}
-
-/* USER CODE BEGIN Header_StartTask6 */
-/**
-* @brief Function implementing the Task6 thread.
-* @param argument: Not used
-* @retval None
-*/
-/* USER CODE END Header_StartTask6 */
-void StartTask6(void *argument)
-{
-  /* USER CODE BEGIN StartTask6 */
-  /* Infinite loop */
-  for(;;)
-  {
-	  HAL_UART_Transmit(&huart2, dataTask6, sizeof(dataTask6), 2000);
-	  HAL_GPIO_TogglePin(GPIOB /*RougeV, JauneV, RougeP*/);
-	  osDelay(2000);
-  }
-  /* USER CODE END StartTask6 */
-}
-
-/**
-  * @brief  Period elapsed callback in non blocking mode
-  * @note   This function is called  when TIM6 interrupt took place, inside
-  * HAL_TIM_IRQHandler(). It makes a direct call to HAL_IncTick() to increment
-  * a global variable "uwTick" used as application time base.
-  * @param  htim : TIM handle
-  * @retval None
-  */
-void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
-{
-  /* USER CODE BEGIN Callback 0 */
-
-  /* USER CODE END Callback 0 */
-  if (htim->Instance == TIM6) {
-    HAL_IncTick();
-  }
-  /* USER CODE BEGIN Callback 1 */
-
-  /* USER CODE END Callback 1 */
 }
 
 /**
