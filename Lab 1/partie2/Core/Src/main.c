@@ -349,7 +349,7 @@ void StartTask1(void *argument)
   {
 	  // for btn press HAL_GPIO_ReadPin(GPIOC_ GPIO_PIN_13)
 
-	  while(HAL_GPIO_ReadPin(GPIOC_ GPIO_PIN_13) == 0){
+	  while(HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_13) == 0){
 		  HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_3);
 		  HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_7);
 		  // add button press condition
