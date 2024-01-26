@@ -3,9 +3,9 @@
 ../Core/Src/main.c:265:13:MX_USART2_UART_Init	2
 ../Core/Src/main.c:298:13:MX_GPIO_Init	1
 ../Core/Src/main.c:344:6:StartTask1	2
-../Core/Src/main.c:368:6:StartTask2	1
-../Core/Src/main.c:388:6:StartTask3	1
-../Core/Src/main.c:408:6:StartTask4	1
-../Core/Src/main.c:428:6:StartTask5	1
-../Core/Src/main.c:448:6:StartTask6	1
-../Core/Src/main.c:466:6:Error_Handler	1
+../Core/Src/main.c:373:6:StartTask2	2
+../Core/Src/main.c:403:6:StartTask3	2
+../Core/Src/main.c:431:6:StartTask4	2
+../Core/Src/main.c:458:6:StartTask5	2
+../Core/Src/main.c:486:6:StartTask6	1
+../Core/Src/main.c:504:6:Error_Handler	1

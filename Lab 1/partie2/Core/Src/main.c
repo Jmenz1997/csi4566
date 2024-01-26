@@ -309,7 +309,7 @@ static void MX_GPIO_Init(void)
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOB, GPIO_PIN_3|GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_6
-                          |GPIO_PIN_7, GPIO_PIN_RESET);
+                          |GPIO_PIN_9, GPIO_PIN_RESET);
 
   /*Configure GPIO pin : PC13 */
   GPIO_InitStruct.Pin = GPIO_PIN_13;
@@ -318,9 +318,9 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
   /*Configure GPIO pins : PB3 PB4 PB5 PB6
-                           PB7 */
+                           PB9 */
   GPIO_InitStruct.Pin = GPIO_PIN_3|GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_6
-                          |GPIO_PIN_7;
+                          |GPIO_PIN_9;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -341,19 +341,24 @@ static void MX_GPIO_Init(void)
   * @retval None
   */
 /* USER CODE END Header_StartTask1 */
-void StartTask1(void *argument)
+void StartTask1(void *argument) // auto vert
 {
   /* USER CODE BEGIN 5 */
   /* Infinite loop */
   for(;;)
   {
 	  // for btn press HAL_GPIO_ReadPin(GPIOC_ GPIO_PIN_13)
-
-	  while(HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_13) == 0){
-		  HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_3);
-		  HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_7);
-		  // add button press condition
+	  HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_3);
+	  while(1){
+		  if( HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_13) == 0 ){
+			  break;
+		  }
 	  }
+
+	  HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_3);
+	  osDelay(17000);
+
+
   }
   /* USER CODE END 5 */
 }
@@ -365,15 +370,25 @@ void StartTask1(void *argument)
 * @retval None
 */
 /* USER CODE END Header_StartTask2 */
-void StartTask2(void *argument)
+void StartTask2(void *argument) // auto jaune
 {
   /* USER CODE BEGIN StartTask2 */
   /* Infinite loop */
   for(;;)
   {
-	  HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_4);
-	  HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_7);
-	  osDelay(3000);
+	  while(1){
+	  		  if( HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_13) == 0 ){
+	  			  break;
+	  		  }
+	  	  }
+
+	  	  HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_4);
+	  	  osDelay(3000);
+	  	  HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_4);
+	  	  osDelay(12000);
+	  	  HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_4);
+	  	  osDelay(2000);
+	  	  HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_4);
   }
   /* USER CODE END StartTask2 */
 }
@@ -385,15 +400,23 @@ void StartTask2(void *argument)
 * @retval None
 */
 /* USER CODE END Header_StartTask3 */
-void StartTask3(void *argument)
+void StartTask3(void *argument) // auto rouge
 {
   /* USER CODE BEGIN StartTask3 */
   /* Infinite loop */
   for(;;)
   {
-	  HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_5);
-	  HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_7);
-	  osDelay(1000);
+	  while(1){
+		  if( HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_13) == 0 ){
+			  break;
+		  }
+	  }
+
+	  osDelay(3000);
+  	  HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_5);
+
+		 osDelay(14000);
+		 HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_5);
   }
   /* USER CODE END StartTask3 */
 }
@@ -405,14 +428,21 @@ void StartTask3(void *argument)
 * @retval None
 */
 /* USER CODE END Header_StartTask4 */
-void StartTask4(void *argument)
+void StartTask4(void *argument) // peiton rouge
 {
   /* USER CODE BEGIN StartTask4 */
   /* Infinite loop */
   for(;;)
   {
-	  HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_5);
-	  HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_6);
+
+	 HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_9);
+	  while(1){
+		  if( HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_13) == 0 ){
+			  break;
+		  }
+	  }
+	  osDelay(4000);
+	  HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_9);
 	  osDelay(10000);
   }
   /* USER CODE END StartTask4 */
@@ -425,15 +455,23 @@ void StartTask4(void *argument)
 * @retval None
 */
 /* USER CODE END Header_StartTask5 */
-void StartTask5(void *argument)
+void StartTask5(void *argument) // peiton vert
 {
   /* USER CODE BEGIN StartTask5 */
   /* Infinite loop */
   for(;;)
   {
-	  HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_5);
-	  HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_7);
-	  osDelay(1000);
+	  while(1){
+		  if( HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_13) == 0 ){
+			  break;
+		  }
+	  }
+	  osDelay(4000);
+	  HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_6);
+	  osDelay(9999);
+	  HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_6);
+
+
   }
   /* USER CODE END StartTask5 */
 }
@@ -451,10 +489,10 @@ void StartTask6(void *argument)
   /* Infinite loop */
   for(;;)
   {
-	  HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_5);
-	  HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_4);
-	  HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_7);
-	  osDelay(2000);
+//	  HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_5);
+//	  HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_4);
+//	  HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_7);
+//	  osDelay(2000);
   }
   /* USER CODE END StartTask6 */
 }
