@@ -315,7 +315,11 @@ void StartTask1(void *argument)
   /* Infinite loop */
   for(;;)
   {
-//	   osDelay(13000);
+
+	  HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_5);
+	   osDelay(12000);
+	   HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_5);
+	   osDelay(13000);
   }
   /* USER CODE END 5 */
 }
@@ -334,14 +338,14 @@ void StartTask2(void *argument)
   for(;;)
   {
 	 // HAL_UART_Transmit(&huart2, dataTask1, 7, 3000);
-//	  osDelay(10000);
-//	  HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_4);
-//	  osDelay(2000);
-//	  HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_4);
-//	  osDelay(10000);
-//	  HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_4);
-//	  osDelay(3000);
-//	  HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_4);
+	  osDelay(10000);
+	  HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_4);
+	  osDelay(2000);
+	  HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_4);
+	  osDelay(10000);
+	  HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_4);
+	  osDelay(3000);
+	  HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_4);
   }
   /* USER CODE END StartTask2 */
 }
@@ -360,11 +364,11 @@ void StartTask3(void *argument)
   for(;;)
   {
 	  //HAL_UART_Transmit(&huart2, dataTask1, 7, 10000);
-//	  osDelay(12000);
-//	  HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_3);
-//	  osDelay(10000);
-//	  HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_3);
-//	  osDelay(3000);
+	  osDelay(12000);
+	  HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_3);
+	  osDelay(10000);
+	  HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_3);
+	  osDelay(3000);
   }
   /* USER CODE END StartTask3 */
 }
@@ -383,9 +387,7 @@ void StartTask4(void *argument)
   for(;;)
   {
 	  //HAL_UART_Transmit(&huart2, 7, 3000);
-	  //osDelay()
-	  //HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_4);
-	  //osDelay(3000);
+//	  osDelay()
   }
   /* USER CODE END StartTask4 */
 }
