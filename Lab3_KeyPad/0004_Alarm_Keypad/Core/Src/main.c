@@ -18,6 +18,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "cmsis_os.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -50,10 +51,35 @@ I2C_HandleTypeDef hi2c1;
 
 UART_HandleTypeDef huart2;
 
+/* Definitions for defaultTask */
+osThreadId_t defaultTaskHandle;
+const osThreadAttr_t defaultTask_attributes = {
+  .name = "defaultTask",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityNormal,
+};
+/* Definitions for Keypad */
+osThreadId_t KeypadHandle;
+const osThreadAttr_t Keypad_attributes = {
+  .name = "Keypad",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityHigh,
+};
+/* Definitions for lcd */
+osThreadId_t lcdHandle;
+const osThreadAttr_t lcd_attributes = {
+  .name = "lcd",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityHigh,
+};
 /* USER CODE BEGIN PV */
 extern char key;
 char hold[6];
+char password[6];
 bool armed = false;
+char codeDisplay[11];
+bool hasChanged = true;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -61,6 +87,10 @@ void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_USART2_UART_Init(void);
 static void MX_I2C1_Init(void);
+void StartDefaultTask(void *argument);
+void TaskKeypad(void *argument);
+void TaskLCD(void *argument);
+
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -105,14 +135,56 @@ int main(void)
     SSD1306_Init();
     SSD1306_GotoXY (0,0);
     //SSD1306_Puts ("Voltage:", &Font_11x18, 1);
-    SSD1306_Puts ("Enter Code:", &Font_11x18, 1);
+    SSD1306_Puts ("SET CODE:", &Font_11x18, 1);
     SSD1306_GotoXY (0, 30);
     SSD1306_UpdateScreen();
     SSD1306_UpdateScreen();
+
     HAL_Delay (500);
 
   /* USER CODE END 2 */
 
+  /* Init scheduler */
+  osKernelInitialize();
+
+  /* USER CODE BEGIN RTOS_MUTEX */
+  /* add mutexes, ... */
+  /* USER CODE END RTOS_MUTEX */
+
+  /* USER CODE BEGIN RTOS_SEMAPHORES */
+  /* add semaphores, ... */
+  /* USER CODE END RTOS_SEMAPHORES */
+
+  /* USER CODE BEGIN RTOS_TIMERS */
+  /* start timers, add new ones, ... */
+  /* USER CODE END RTOS_TIMERS */
+
+  /* USER CODE BEGIN RTOS_QUEUES */
+  /* add queues, ... */
+  /* USER CODE END RTOS_QUEUES */
+
+  /* Create the thread(s) */
+  /* creation of defaultTask */
+  defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
+
+  /* creation of Keypad */
+  KeypadHandle = osThreadNew(TaskKeypad, NULL, &Keypad_attributes);
+
+  /* creation of lcd */
+  lcdHandle = osThreadNew(TaskLCD, NULL, &lcd_attributes);
+
+  /* USER CODE BEGIN RTOS_THREADS */
+  /* add threads, ... */
+  /* USER CODE END RTOS_THREADS */
+
+  /* USER CODE BEGIN RTOS_EVENTS */
+  /* add events, ... */
+  /* USER CODE END RTOS_EVENTS */
+
+  /* Start scheduler */
+  osKernelStart();
+
+  /* We should never get here as control is now taken by the scheduler */
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
@@ -121,151 +193,14 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
 	/* D10 to D7 as input pins for row 0 to row 3. D6 to D3 as output for column pins C1 to C3*/
-
-//	  key = Get_Key();
-//	  sprintf(hold, "%c", key);
-//	  HAL_UART_Transmit(&huart2, (uint8_t *)hold, strlen(hold), 100);
-//	  SSD1306_GotoXY (0, 30);
-//	  SSD1306_UpdateScreen();
-//	  SSD1306_Puts (hold, &Font_11x18, 1);
-//	  SSD1306_UpdateScreen();
-//	  HAL_Delay (500);
-
-	  // configure code //
-
-	  HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
-
-	  for(int i = 0; i <= 6; i++){
-		  key = Get_Key();
-
-		  if(key == '#' && (strlen(hold) == 4 || strlen(hold) == 6)){
-			  SSD1306_GotoXY (0, 30);
-			  SSD1306_UpdateScreen();
-			  SSD1306_Puts ("ARME  ", &Font_11x18, 1);
-			  SSD1306_UpdateScreen();
-			  armed = true;
-			  break;
-		  }
-//		  else if(strlen(hold) > 6){
-//			  SSD1306_GotoXY (0, 30);
-//			  SSD1306_UpdateScreen();
-//			  SSD1306_Puts ("Re-entre", &Font_11x18, 1);
-//			  SSD1306_UpdateScreen();
-//
-//			  HAL_Delay(3000);
-//
-//			  memset(hold,0,strlen(hold));
-//
-//			  SSD1306_UpdateScreen();
-//			  SSD1306_Puts (hold, &Font_11x18, 1);
-//			  SSD1306_UpdateScreen();
-//
-//		  }
-		  else{
-			  //sprintf(hold, "%c", key);
-			  strcat(hold, &key);
-
-			  SSD1306_GotoXY (0, 30);
-			  SSD1306_UpdateScreen();
-			  SSD1306_Puts (hold, &Font_11x18, 1);
-			  SSD1306_UpdateScreen();
-		  }
-	  }
-
-	  // NON-ARMÉ
-	  while(1){
-
-	  char temp[6];
-		  if(armed == true){
-			  SSD1306_GotoXY (0, 30);
-			  SSD1306_Clear();
-			  SSD1306_UpdateScreen();
-			  SSD1306_Puts ("ARME", &Font_11x18, 1);
-			  SSD1306_UpdateScreen();
-
-			  HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
-
-
-			  HAL_Delay(1500);
-
-			  SSD1306_GotoXY (0, 30);
-			  SSD1306_Clear();
-			  SSD1306_UpdateScreen();
-
-
-			  memset(temp, '\0', sizeof(temp));
-
-			  for(int i = 0; i <= 6; i++){
-			  		  key = Get_Key();
-
-			  		  if(key == '#'){
-			  			  if(0 == strcmp(hold, temp))
-			  			  armed = false;
-			  			  break;
-			  		  }
-					  else{
-						  //sprintf(hold, "%c", key);
-						  strcat(temp, &key);
-
-						  SSD1306_GotoXY (0, 30);
-						  SSD1306_UpdateScreen();
-						  SSD1306_Puts (temp, &Font_11x18, 1);
-						  SSD1306_UpdateScreen();
-					  }
-			  	}
-
-//			  if(strcmp(temp, hold) == 0){
-//				  SSD1306_GotoXY (0, 30);
-//				  			  			  SSD1306_UpdateScreen();
-//				SSD1306_Puts ("HERE", &Font_11x18, 1);
-//
-//	  			  SSD1306_UpdateScreen();
-//				  armed = false;
-//			  }
-
-		  }
-		  else {
-			  SSD1306_GotoXY (0, 30);
-			  SSD1306_Clear();
-			  SSD1306_UpdateScreen();
-			  SSD1306_Puts ("NON-ARME", &Font_11x18, 1);
-			  SSD1306_UpdateScreen();
-
-			  HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
-
-			  char temp[6];
-
-			  HAL_Delay(1500);
-
-			  SSD1306_Clear();
-			  SSD1306_UpdateScreen();
-
-			    memset(temp, '\0', sizeof(temp));
-			    char star[6];
-			    char ja = '*';
-
-			  for(int i = 0; i <= 6; i++){
-					  key = Get_Key();
-
-					  if(key == '#'){
-			  			  if(0 == strcmp(hold, temp))
-						  armed = true;
-						  break;
-					  }
-					  else{
-						  //sprintf(hold, "%c", key);
-						  strcat(temp, &key);
-						  SSD1306_GotoXY (0, 30);
-						  SSD1306_UpdateScreen();
-
-						  SSD1306_Puts (temp, &Font_11x18, 1);
-						  SSD1306_UpdateScreen();
-					  }
-				}
-		  }
-	  }
-
-
+	  key = Get_Key();
+	  sprintf(hold, "%c", key);
+	  HAL_UART_Transmit(&huart2, (uint8_t *)hold, strlen(hold), 100);
+	  SSD1306_GotoXY (0, 30);
+	  SSD1306_UpdateScreen();
+	  SSD1306_Puts (hold, &Font_11x18, 1);
+	  SSD1306_UpdateScreen();
+	  HAL_Delay (500);
   }
   /* USER CODE END 3 */
 }
@@ -402,13 +337,13 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5|GPIO_PIN_6, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOB, KC0_Pin|KC3_Pin|KC1_Pin|KC2_Pin, GPIO_PIN_RESET);
 
-  /*Configure GPIO pin : PA5 */
-  GPIO_InitStruct.Pin = GPIO_PIN_5;
+  /*Configure GPIO pins : PA5 PA6 */
+  GPIO_InitStruct.Pin = GPIO_PIN_5|GPIO_PIN_6;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -446,6 +381,135 @@ static void MX_GPIO_Init(void)
 /* USER CODE BEGIN 4 */
 
 /* USER CODE END 4 */
+
+/* USER CODE BEGIN Header_StartDefaultTask */
+/**
+  * @brief  Function implementing the defaultTask thread.
+  * @param  argument: Not used
+  * @retval None
+  */
+/* USER CODE END Header_StartDefaultTask */
+void StartDefaultTask(void *argument)
+{
+  /* USER CODE BEGIN 5 */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END 5 */
+}
+
+/* USER CODE BEGIN Header_TaskKeypad */
+/**
+* @brief Function implementing the Keypad thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_TaskKeypad */
+void TaskKeypad(void *argument)
+{
+  /* USER CODE BEGIN TaskKeypad */
+  /* Infinite loop */
+  for(;;)
+  {
+
+	  memset(hold, '\0', sizeof(hold)); // clear the value of hold
+	  memset(codeDisplay, '\0', sizeof(codeDisplay)); // clear the value of codeDisplay
+	  //strcat(codeDisplay, "Code:"); // reverts text back to "Code:"
+
+	  for(int i = 0; i < 6; i++){
+		  if(i == 0){
+			  SSD1306_GotoXY (0, 30); // tells to write on second line
+			  SSD1306_UpdateScreen();
+			  SSD1306_Puts ("             ", &Font_11x18, 1); // displays '-' for every key pressed before '#'
+			  SSD1306_UpdateScreen();
+		  }
+
+		  key = Get_Key(); // gets value of pressed key
+
+		  if(key == '#' && (strlen(hold) == 4 || strlen(hold) == 6)){ // checks if star key pressed and length of entered password is either 4 or 6
+			  if(strlen(password) != 0 && (0 == strcmp(hold, password))){ // check to see is the password has been set and if password has the same value as hold(the code entered to arm or disarm)
+				  armed = !armed; // changes the state of armed to the opposite of its current state
+				  //HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5); // changes the state of the green light (will be on when disarmed and off when armed)
+				  //HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_6); // changes the state of the red light (will be on when armed and off when disarmed)
+				  hasChanged = false; // changes the value of hasChanged to false to indicate that the light has not been toggled on change of armed or disarmed
+				  break;
+			  }
+			  else if(strlen(password) == 0){ // checks to see if the password has not been set
+				  strncpy(password, hold, 6); // copies the value of hold(the code entered by the user) into password(the stored user set code)
+				  armed = !armed; // set the sate to armed after code initially set
+				  //HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5); // turns off the green light as the system is now armed
+				  //HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_6); // turns on the red light as the system is now armed
+				  hasChanged = false; // changes the value of hasChanged to false to indicate that the light has not been toggled on change of armed or disarmed
+				  break;
+			  }
+			  //HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
+			  break; // exits the loop if invalid code tried
+		  }
+		  else{ // if key pressed that is not '#'
+			  strcat(hold, &key); // puts key at the end of hold
+			  strcat(codeDisplay, "-"); // puts '-' in the text displaying the code on the LCD
+		  }
+		  HAL_Delay(100);
+
+	  }
+    //osDelay(1);
+  }
+  /* USER CODE END TaskKeypad */
+}
+
+/* USER CODE BEGIN Header_TaskLCD */
+/**
+* @brief Function implementing the lcd thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_TaskLCD */
+void TaskLCD(void *argument)
+{
+  /* USER CODE BEGIN TaskLCD */
+  /* Infinite loop */
+  for(;;)
+  {
+	  // changes the value of armed or disarmed text
+	  if(strlen(password) == 0){
+		  SSD1306_GotoXY (0, 0); // tells to write on first line
+		  SSD1306_UpdateScreen();
+		  SSD1306_Puts ("SET CODE", &Font_11x18, 1);
+		  SSD1306_UpdateScreen();
+	  }
+	  else if(armed){
+		  SSD1306_GotoXY (0, 0); // tells to write on first line
+		  SSD1306_UpdateScreen();
+		  SSD1306_Puts ("ARMED    ", &Font_11x18, 1);
+		  SSD1306_UpdateScreen();
+	  }
+	  else{
+		  SSD1306_GotoXY (0, 0); // tells to write on first line
+		  SSD1306_UpdateScreen();
+		  SSD1306_Puts ("DISARMED  ", &Font_11x18, 1);
+		  SSD1306_UpdateScreen();
+	  }
+
+	  if(hasChanged == false){ // checks to see if the light has to be toggled
+		  HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5); // toggles the light
+		  hasChanged = true; // changes the value of hasChanged to true indicating the light has been toggled
+	  }
+
+	  // update code text
+//	  if(strlen(codeDisplay) == 5){ // clears the display to ensure no leftover text (== 5 means only "Code:")
+//		  SSD1306_Clear();
+//	  }
+	  SSD1306_GotoXY (0, 30); // tells to write on second line
+	  SSD1306_UpdateScreen();
+	  SSD1306_Puts (hold, &Font_11x18, 1); // displays '-' for every key pressed before '#'
+	  SSD1306_UpdateScreen();
+
+    //osDelay(1);
+  }
+  /* USER CODE END TaskLCD */
+}
 
 /**
   * @brief  Period elapsed callback in non blocking mode

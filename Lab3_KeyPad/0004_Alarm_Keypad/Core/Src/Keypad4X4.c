@@ -154,7 +154,7 @@ char Get_Key(void)
 		break;
 	}
 }
-	HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
+	//HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5); // was toggling the light every time the keypad was pressed
 	return(key);
 }
 
